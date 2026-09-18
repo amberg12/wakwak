@@ -463,6 +463,7 @@ fn search<Node: NodeType>(
                 );
 
                 if score > alpha && reduction > 0 {
+                    move_depth = new_depth;
                     score = -search::<NonPV>(
                         pos,
                         thread,
