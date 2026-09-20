@@ -158,10 +158,11 @@ params! {
     move_stability_scale: u128 => 410;
     move_stability_min:   u128 => 2867;
 
-    quiet_lmr_base:  i32 => 1024;
-    quiet_lmr_scale: i32 => 448;
-    lmr_imp:         i32 => 1024;
-    lmr_pv:          i32 => 1024;
+    quiet_lmr_base:        i32 => 1024;
+    quiet_lmr_scale:       i32 => 128;
+    lmr_imp:               i32 => 1024;
+    lmr_pv:                i32 => 1024;
+    lmr_clamp_upper_bound: i32 => 50;
 
     fp_base:  i32 => 256;
     fp_scale: i32 => 128;
@@ -327,9 +328,12 @@ impl Params {
     }
 
     #[inline]
-    pub fn lmr(depth: i32) -> i32 {
+    pub fn lmr(depth: i32, searched_moves: i32) -> i32 {
         let log_depth = depth.ilog2() as i32;
+        let log_searched_moves = searched_moves
+            .clamp(1, Self::lmr_clamp_upper_bound())
+            .ilog2() as i32;
 
-        Self::quiet_lmr_base() + Self::quiet_lmr_scale() * log_depth
+        Self::quiet_lmr_base() + Self::quiet_lmr_scale() * log_depth * log_searched_moves
     }
 }
