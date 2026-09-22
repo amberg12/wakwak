@@ -158,7 +158,7 @@ impl History {
         let stm = board.stm();
         let mut corr = 0;
 
-        corr += Params::pawn_corr() * self.pawn_corr.entry(stm, board.pawn_hash());
+        corr += Params::pawn_corr() * self.pawn_corr.entry(stm, board.pawn_duck_hash());
         corr += Params::minor_corr() * self.minor_corr.entry(stm, board.minor_hash());
         corr += Params::major_corr() * self.major_corr.entry(stm, board.major_hash());
         corr += Params::nonpawn_corr() * self.white_corr.entry(stm, board.white_hash());
