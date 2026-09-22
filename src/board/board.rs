@@ -116,6 +116,10 @@ impl Board {
         self.pawn_hash
     }
 
+    pub fn pawn_duck_hash(&self) -> u64 {
+        self.pawn_hash ^ self.duck.map_or(0, |sq| ZOBRIST.duck(sq))
+    }
+
     #[inline]
     pub fn minor_hash(&self) -> u64 {
         self.minor_hash

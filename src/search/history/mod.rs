@@ -86,7 +86,8 @@ impl History {
         let stm = board.stm();
         let diff = score.0 as i64 - static_eval.0 as i64;
 
-        self.pawn_corr.update(stm, board.pawn_hash(), depth, diff);
+        self.pawn_corr
+            .update(stm, board.pawn_duck_hash(), depth, diff);
         self.minor_corr.update(stm, board.minor_hash(), depth, diff);
         self.major_corr.update(stm, board.major_hash(), depth, diff);
         self.white_corr.update(stm, board.white_hash(), depth, diff);
