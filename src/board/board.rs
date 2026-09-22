@@ -117,6 +117,11 @@ impl Board {
     }
 
     #[inline]
+    pub fn duck_hash(&self) -> u64 {
+        self.duck.map_or(0, |sq| ZOBRIST.duck(sq))
+    }
+
+    #[inline]
     pub fn minor_hash(&self) -> u64 {
         self.minor_hash
     }
@@ -128,12 +133,12 @@ impl Board {
 
     #[inline]
     pub fn white_hash(&self) -> u64 {
-        self.white_hash
+        self.white_hash ^ self.duck_hash()
     }
 
     #[inline]
     pub fn black_hash(&self) -> u64 {
-        self.black_hash
+        self.black_hash ^ self.duck_hash()
     }
 
     #[inline]
