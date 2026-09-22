@@ -17,6 +17,7 @@ pub struct Board {
     pub(super) duck: Option<Square>,
     pub(super) hash: u64,
     pub(super) pawn_hash: u64,
+    pub(super) pawn_king_hash: u64,
     pub(super) minor_hash: u64,
     pub(super) major_hash: u64,
     pub(super) white_hash: u64,
@@ -114,6 +115,11 @@ impl Board {
     #[inline]
     pub fn pawn_hash(&self) -> u64 {
         self.pawn_hash
+    }
+
+    #[inline]
+    pub fn pawn_king_hash(&self) -> u64 {
+        self.pawn_king_hash
     }
 
     #[inline]
@@ -277,7 +283,10 @@ impl Board {
         self.hash ^= value;
 
         match piece {
-            Piece::Pawn => self.pawn_hash ^= value,
+            Piece::Pawn => {
+                self.pawn_hash ^= value;
+                self.pawn_king_hash ^= value;
+            }
             Piece::Knight => self.minor_hash ^= value,
             Piece::Bishop => self.minor_hash ^= value,
             Piece::Rook => self.major_hash ^= value,
@@ -285,6 +294,7 @@ impl Board {
             Piece::King => {
                 self.minor_hash ^= value;
                 self.major_hash ^= value;
+                self.pawn_king_hash ^= value;
             }
         }
 

@@ -119,6 +119,7 @@ impl Board {
             duck: None,
             hash: 0,
             pawn_hash: 0,
+            pawn_king_hash: 0,
             minor_hash: 0,
             major_hash: 0,
             white_hash: 0,

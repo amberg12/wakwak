@@ -90,7 +90,8 @@ impl History {
         let stm = board.stm();
         let diff = score.0 as i64 - static_eval.0 as i64;
 
-        self.pawn_corr.update(stm, board.pawn_hash(), depth, diff);
+        self.pawn_corr
+            .update(stm, board.pawn_king_hash(), depth, diff);
         self.minor_corr.update(stm, board.minor_hash(), depth, diff);
         self.major_corr.update(stm, board.major_hash(), depth, diff);
         self.white_corr.update(stm, board.white_hash(), depth, diff);
@@ -167,7 +168,7 @@ impl History {
         let stm = board.stm();
         let mut corr = 0;
 
-        corr += Params::pawn_corr() * self.pawn_corr.entry(stm, board.pawn_hash());
+        corr += Params::pawn_corr() * self.pawn_corr.entry(stm, board.pawn_king_hash());
         corr += Params::minor_corr() * self.minor_corr.entry(stm, board.minor_hash());
         corr += Params::major_corr() * self.major_corr.entry(stm, board.major_hash());
         corr += Params::nonpawn_corr() * self.white_corr.entry(stm, board.white_hash());
