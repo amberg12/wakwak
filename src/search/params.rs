@@ -167,8 +167,9 @@ params! {
     dcp_history_min:         i32 => -2;
     dcp_history_max:         i32 => 2;
 
-    see_base:  i32 => 0;
-    see_scale: i32 => -80;
+    see_base:          i32 => 0;
+    see_scale:         i32 => -80;
+    see_history_scale: i32 => -16;
 
     mp_see_threshold: i32 => 0;
     mp_qs_see_threshold: i32 => 0;
@@ -198,9 +199,8 @@ params! {
     lmr_in_check:    i32 => 512;
     lmr_history:     i32 => 64;
 
-    fp_base:          i32 => 256;
-    fp_scale:         i32 => 128;
-    fp_history_scale: i32 => 32;
+    fp_base:  i32 => 256;
+    fp_scale: i32 => 128;
 
     noisy_lmr_noisy_scale: i32 => 128;
     noisy_lmr_duck_scale:  i32 => 128;
@@ -210,10 +210,8 @@ params! {
     quiet_lmr_cont1_scale: i32 => 1024;
     quiet_lmr_cont2_scale: i32 => 1024;
 
-    quiet_mlp_quiet_scale: i32 => 1024;
-    quiet_mlp_duck_scale:  i32 => 1024;
-    quiet_mlp_cont1_scale: i32 => 1024;
-    quiet_mlp_cont2_scale: i32 => 1024;
+    noisy_mlp_noisy_scale: i32 => 1024;
+    noisy_mlp_duck_scale:  i32 => 1024;
 
     quiet_mp_quiet_scale: i32 => 1024;
     quiet_mp_duck_scale:  i32 => 1024;
@@ -390,8 +388,8 @@ impl Params {
     }
 
     #[inline]
-    pub fn see_margin(depth: i32) -> i32 {
-        Self::see_base() + Self::see_scale() * depth
+    pub fn see_margin(depth: i32, history: i32) -> i32 {
+        Self::see_base() + Self::see_scale() * depth + history * Params::see_history_scale() / 16384
     }
 
     #[inline]
@@ -465,22 +463,19 @@ impl Params {
     }
 
     #[inline]
-    pub fn noisy_mlp_history(_thread: &ThreadData, _pos: &Position, _mv: Move) -> i32 {
-        0
+    pub fn noisy_mlp_history(thread: &ThreadData, pos: &Position, mv: Move) -> i32 {
+        let board = pos.board();
+        let mut history = 0;
+
+        history += thread.history.noisy(board, mv) * Self::noisy_mlp_noisy_scale();
+        history += thread.history.duck(board, mv) * Self::noisy_mlp_duck_scale();
+
+        history / 1024
     }
 
     #[inline]
-    pub fn quiet_mlp_history(thread: &ThreadData, pos: &Position, mv: Move) -> i32 {
-        let board = pos.board();
-        let mut history = 0;
-        let indices = ContIndices::new(pos);
-
-        history += thread.history.quiet(board, mv) * Self::quiet_mlp_quiet_scale();
-        history += thread.history.duck(board, mv) * Self::quiet_mlp_duck_scale();
-        history += thread.history.cont1(board, indices, mv) * Self::quiet_mlp_cont1_scale();
-        history += thread.history.cont2(board, indices, mv) * Self::quiet_mlp_cont2_scale();
-
-        history / 1024
+    pub fn quiet_mlp_history(_thread: &ThreadData, _pos: &Position, _mv: Move) -> i32 {
+        0
     }
 
     #[inline]
@@ -523,9 +518,7 @@ impl Params {
     }
 
     #[inline]
-    pub fn fp_margin(depth: i32, history: i32) -> i32 {
-        Params::fp_base()
-            + Params::fp_scale() * depth
-            + history * Params::fp_history_scale() / 16384
+    pub fn fp_margin(depth: i32) -> i32 {
+        Params::fp_base() + Params::fp_scale() * depth
     }
 }

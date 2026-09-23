@@ -427,10 +427,7 @@ fn search<Node: NodeType>(
             Futility Pruning: If we are unlikely to raise alpha with a quiet move, we do skip
             quiet moves.
             */
-            if is_quiet
-                && lmr_depth <= 5
-                && static_eval + Params::fp_margin(lmr_depth, mlp_history) <= alpha
-            {
+            if is_quiet && lmr_depth <= 5 && static_eval + Params::fp_margin(lmr_depth) <= alpha {
                 move_picker.skip_quiets();
                 continue;
             }
@@ -466,7 +463,9 @@ fn search<Node: NodeType>(
             if !is_quiet
                 && depth <= 10
                 && move_picker.stage() == Stage::YieldBadNoisies
-                && !pos.board().cmp_see(mv, Params::see_margin(depth))
+                && !pos
+                    .board()
+                    .cmp_see(mv, Params::see_margin(depth, mlp_history))
             {
                 continue;
             }
