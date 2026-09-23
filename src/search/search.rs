@@ -404,6 +404,12 @@ fn search<Node: NodeType>(
             Params::noisy_lmr_history(thread, pos, mv)
         };
 
+        let mlp_history = if is_quiet {
+            Params::quiet_mlp_history(thread, pos, mv)
+        } else {
+            Params::noisy_mlp_history(thread, pos, mv)
+        };
+
         let duck_history = thread.history.duck(pos.board(), mv);
         legal_moves += 1;
 
@@ -421,7 +427,10 @@ fn search<Node: NodeType>(
             Futility Pruning: If we are unlikely to raise alpha with a quiet move, we do skip
             quiet moves.
             */
-            if is_quiet && lmr_depth <= 5 && static_eval + Params::fp_margin(lmr_depth) <= alpha {
+            if is_quiet
+                && lmr_depth <= 5
+                && static_eval + Params::fp_margin(lmr_depth, mlp_history) <= alpha
+            {
                 move_picker.skip_quiets();
                 continue;
             }
