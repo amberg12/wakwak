@@ -426,7 +426,7 @@ fn search<Node: NodeType>(
 
     let indices = ContIndices::new(pos);
     while let Some(mv) = move_picker.next(pos, thread, indices) {
-        if skip_move == Some(mv) {
+        if skip_move.is_some_and(|sm| sm.duckless_is_eq(mv)) {
             continue;
         }
 

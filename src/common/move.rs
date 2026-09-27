@@ -64,6 +64,12 @@ impl Move {
     }
 
     #[inline]
+    pub const fn duckless_is_eq(self, other: Move) -> bool {
+        const DUCKLESS: u32 = 0x3C0FFF;
+        (self.0.get() & DUCKLESS) == (other.0.get() & DUCKLESS)
+    }
+
+    #[inline]
     pub fn display(self, dumb_interface: bool, frc: bool) -> String {
         let (src, mut dest) = (self.src(), self.dest());
 
