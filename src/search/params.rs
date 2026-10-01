@@ -226,6 +226,7 @@ params! {
     lmr_in_check:    i32 => 512;
     lmr_history:     i32 => 64;
     lmr_corr:        i32 => 3072;
+    lmr_cut_node:    i32 => 1024;
 
     fp_base:  i32 => 256;
     fp_scale: i32 => 128;
