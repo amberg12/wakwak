@@ -200,6 +200,7 @@ params! {
     se_beta:       i32 => 128;
     se_depth_lerp: i32 => 512;
     se_dext:       i32 => 60;
+    se_dext_pv:    i32 => 20;
 
     mp_see_threshold: i32 => 0;
     mp_qs_see_threshold: i32 => 0;
@@ -652,5 +653,10 @@ impl Params {
     #[inline]
     fn history_adjustment(history: i32, offset: i32, divisor: i32, min: i32, max: i32) -> i32 {
         ((history + offset) / divisor).clamp(min, max)
+    }
+
+    #[inline]
+    pub fn se_dext_margin(pv: bool) -> i32 {
+        Self::se_dext() + Self::se_dext_pv() * pv as i32
     }
 }
