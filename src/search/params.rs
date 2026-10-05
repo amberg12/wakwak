@@ -200,6 +200,7 @@ params! {
     se_beta:       i32 => 128;
     se_depth_lerp: i32 => 512;
     se_dext:       i32 => 60;
+    se_text:       i32 => 145;
 
     mp_see_threshold: i32 => 0;
     mp_qs_see_threshold: i32 => 0;
