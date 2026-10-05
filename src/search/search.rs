@@ -863,6 +863,7 @@ fn qsearch<Node: NodeType>(
         prune_noisy_neutrals,
     );
     move_picker.skip_quiets();
+    move_picker.skip_bad_noisies();
     let mut best_move = None;
     let mut bound = Bound::Upper;
 

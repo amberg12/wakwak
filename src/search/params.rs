@@ -201,7 +201,7 @@ params! {
     se_depth_lerp:            i32 => 512;
     se_dext_base:             i32 => 60;
     se_dext_hist_offset:      i32 => 0;
-    se_dext_hist_div:         i32 => 4096;
+    se_dext_hist_div:         i32 => 6144;
     se_dext_hist_min:         i32 => -16;
     se_dext_hist_max:         i32 => 16;
     se_dext_hist_quiet_scale: i32 => 1024;
