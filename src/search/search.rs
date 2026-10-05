@@ -579,7 +579,8 @@ fn search<Node: NodeType>(
             if s_score < s_beta {
                 ext = 1;
 
-                if !Node::PV && s_score + Params::se_dext() < s_beta {
+                let se_dext_history = Params::se_dext_history(thread, pos, cont_indices, mv);
+                if !Node::PV && s_score + Params::se_dext_margin(se_dext_history) < s_beta {
                     ext = 2;
                 }
             }

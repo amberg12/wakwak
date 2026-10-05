@@ -197,9 +197,17 @@ params! {
     noisy_see_base:  i32 => 0;
     noisy_see_scale: i32 => -80;
 
-    se_beta:       i32 => 128;
-    se_depth_lerp: i32 => 512;
-    se_dext:       i32 => 60;
+    se_beta:                  i32 => 128;
+    se_depth_lerp:            i32 => 512;
+    se_dext_base:             i32 => 60;
+    se_dext_hist_offset:      i32 => 0;
+    se_dext_hist_div:         i32 => 4096;
+    se_dext_hist_min:         i32 => -16;
+    se_dext_hist_max:         i32 => 16;
+    se_dext_hist_quiet_scale: i32 => 1024;
+    se_dext_hist_duck_scale:  i32 => 1024;
+    se_dext_hist_cont1_scale: i32 => 1024;
+    se_dext_hist_cont2_scale: i32 => 1024;
 
     mp_see_threshold: i32 => 0;
     mp_qs_see_threshold: i32 => 0;
@@ -652,5 +660,35 @@ impl Params {
     #[inline]
     fn history_adjustment(history: i32, offset: i32, divisor: i32, min: i32, max: i32) -> i32 {
         ((history + offset) / divisor).clamp(min, max)
+    }
+
+    #[inline]
+    pub fn se_dext_margin(history: i32) -> i32 {
+        Self::se_dext_base()
+            - Self::history_adjustment(
+                history,
+                Self::se_dext_hist_offset(),
+                Self::se_dext_hist_div(),
+                Self::se_dext_hist_min(),
+                Self::se_dext_hist_max(),
+            )
+    }
+
+    #[inline]
+    pub fn se_dext_history(
+        thread: &ThreadData,
+        pos: &Position,
+        indices: ContIndices,
+        mv: Move,
+    ) -> i32 {
+        let board = pos.board();
+        let mut history = 0;
+
+        history += thread.history.quiet(board, mv) * Self::se_dext_hist_quiet_scale();
+        history += thread.history.duck(board, mv) * Self::se_dext_hist_duck_scale();
+        history += thread.history.cont1(board, indices, mv) * Self::se_dext_hist_cont1_scale();
+        history += thread.history.cont2(board, indices, mv) * Self::se_dext_hist_cont2_scale();
+
+        history / 1024
     }
 }
